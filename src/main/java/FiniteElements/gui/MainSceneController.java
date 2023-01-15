@@ -5,7 +5,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import FiniteElements.solver.FEMSolver;
 import FiniteElements.solver.Solution;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.net.URL;

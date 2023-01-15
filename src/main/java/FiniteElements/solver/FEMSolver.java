@@ -7,8 +7,6 @@ import org.apache.commons.math3.linear.*;
 
 public class FEMSolver {
     private final UnivariateIntegrator integrator;
-    private final double domainUpperBound = 2.0 ;
-    private int numberOfElements;
     private double h;
     private double hInv;
 
@@ -47,31 +45,31 @@ public class FEMSolver {
 
     public Solution solve( int elements ) {
 
-        this.numberOfElements = elements;
-        this.h = this.domainUpperBound / this.numberOfElements;
+        double domainUpperBound = 2.0;
+        this.h = domainUpperBound / elements;
         this.hInv = 1 / this.h;
 
-        RealMatrix B = new Array2DRowRealMatrix( this.numberOfElements, this.numberOfElements );
+        RealMatrix B = new Array2DRowRealMatrix(elements, elements);
 
-        for ( int i = 0; i < this.numberOfElements; i++ ) {
-            for ( int j = 0; j < this.numberOfElements; j++ ) {
+        for (int i = 0; i < elements; i++ ) {
+            for (int j = 0; j < elements; j++ ) {
                 double integral = 0;
                 if ( Math.abs( i - j ) <= 1 ) {
                     int finalI = i;
                     int finalJ = j;
                     integral = this.integrator.integrate( Integer.MAX_VALUE,
                                                         x -> E( x ) * dfElementdx( finalI, x ) * dfElementdx( finalJ, x ),
-                                                        0, this.domainUpperBound );
+                                                        0, domainUpperBound);
                 }
                 B.setEntry( i, j,  integral - E(0 ) * fElement( i ) * fElement( j ) );
             }
         }
 
-        RealVector L = new ArrayRealVector( this.numberOfElements, 0 );
+        RealVector L = new ArrayRealVector(elements, 0 );
         L.setEntry(0, -10 * E(0) * fElement(0));
         RealVector result = new LUDecomposition(B).getSolver().solve(L);
         result.append(0);
 
-        return new Solution( result.toArray(), 0, this.domainUpperBound);
+        return new Solution( result.toArray(), 0, domainUpperBound);
     }
 }
