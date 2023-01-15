@@ -21,25 +21,25 @@ public class FEMSolver {
     }
 
     private double fElement(int index ) {
-        double center = this.domainUpperBound * index / this.numberOfElements;
-        double left = center - this.h;
-        double right = center + this.h;
+        double centerE = this.h * index;
+        double leftE = centerE - this.h;
+        double rightE = centerE + this.h;
 
-        if (0 < left || 0 > right) {
+        if( 0 < leftE || 0 > rightE ) {
             return 0.0;
         }
-        return  -(left * this.hInv);
+        return  -( leftE * this.hInv );
     }
 
     private double dfElementdx(int index, double x ) {
-        double center = this.domainUpperBound * index / this.numberOfElements;
-        double left = center - this.h;
-        double right = center + this.h;
+        double centerE = this.h * index;
+        double leftE = centerE - this.h;
+        double rightE = centerE + this.h;
 
-        if (x < left || x > right) {
+        if (x < leftE || x > rightE) {
             return 0.0;
 
-        } else if (x <= center) {
+        } else if (x <= centerE) {
             return this.hInv;
         }
         return -this.hInv;
@@ -56,7 +56,6 @@ public class FEMSolver {
         for ( int i = 0; i < this.numberOfElements; i++ ) {
             for ( int j = 0; j < this.numberOfElements; j++ ) {
                 double integral = 0;
-
                 if ( Math.abs( i - j ) <= 1 ) {
                     int finalI = i;
                     int finalJ = j;
@@ -73,6 +72,6 @@ public class FEMSolver {
         RealVector result = new LUDecomposition(B).getSolver().solve(L);
         result.append(0);
 
-        return new Solution(0, this.domainUpperBound, result.toArray());
+        return new Solution( result.toArray(), 0, this.domainUpperBound);
     }
 }

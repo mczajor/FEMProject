@@ -27,24 +27,24 @@ public class MainSceneController implements Initializable {
 
     private void solve( int elements ) {
         FEMSolver solver = new FEMSolver();
-        Solution solution = solver.solve(elements);
+        Solution solution = solver.solve( elements );
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        for (int i = 0; i < solution.result().length; i++) {
+        for ( int i = 0; i < solution.result().length; i++ ) {
             double x = ( solution.domainRight() - solution.domainLeft() ) * i / ( solution.result().length - 1 );
             series.getData().add( new XYChart.Data<>( x, solution.result()[ i ] ) );
         }
-        if(this.plot.getData().size() > 0 ) {
+        if( this.plot.getData().size() > 0 ) {
             this.plot.getData().remove(0 );
         }
-        this.plot.getData().add(0, series);
+        this.plot.getData().add(0, series );
     }
 
     @FXML
     public void btnClick(){
-        if(this.numberOfElements.getText().matches("\\d+")){
+        if(this.numberOfElements.getText().matches("\\d+" )){
             solve(Integer.parseInt(this.numberOfElements.getText()));
         } else{
-            throw new IllegalArgumentException("Number of elements must be a positive integer");
+            throw new IllegalArgumentException( "Number of elements must be a positive integer" );
         }
     }
 }

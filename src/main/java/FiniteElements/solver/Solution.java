@@ -1,5 +1,5 @@
 package FiniteElements.solver;
 
 
-public record Solution(double domainLeft, double domainRight, double[] result) { }
+public record Solution(double[] result, double domainLeft, double domainRight) { }
 
