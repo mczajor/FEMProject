@@ -12,11 +12,8 @@ public class FEMSolver {
     private double h;
     private double hInv;
 
-    public FEMSolver(int minimalIterationCount, int maximalIterationCount) {
-        if (minimalIterationCount < 10 || maximalIterationCount > 64) {
-            throw new IllegalArgumentException( "minimalIterationCount must be >= 10 and maximalIterationCount must be <= 64" );
-        }
-        this.integrator = new TrapezoidIntegrator(1e-6, 1e-6, minimalIterationCount, maximalIterationCount );
+    public FEMSolver() {
+        this.integrator = new TrapezoidIntegrator(1e-6, 1e-6, 20, 64);
     }
 
     private static double E( double x ) {
@@ -49,9 +46,7 @@ public class FEMSolver {
     }
 
     public Solution solve( int elements ) {
-        if ( elements < 2 ) {
-            throw new IllegalArgumentException( "number of elements must be >= 2" );
-        }
+
         this.numberOfElements = elements;
         this.h = this.domainUpperBound / this.numberOfElements;
         this.hInv = 1 / this.h;
@@ -65,11 +60,9 @@ public class FEMSolver {
                 if ( Math.abs( i - j ) <= 1 ) {
                     int finalI = i;
                     int finalJ = j;
-
                     integral = this.integrator.integrate( Integer.MAX_VALUE,
                                                         x -> E( x ) * dfElementdx( finalI, x ) * dfElementdx( finalJ, x ),
-                                                        0,
-                                                        this.domainUpperBound );
+                                                        0, this.domainUpperBound );
                 }
                 B.setEntry( i, j,  integral - E(0 ) * fElement( i ) * fElement( j ) );
             }
