@@ -11,33 +11,32 @@ public class FEMSolver {
     private double hInv;
 
     public FEMSolver() {
-        this.integrator = new TrapezoidIntegrator(1e-6, 1e-6, 20, 64);
+        this.integrator = new TrapezoidIntegrator(1e-5, 1e-5, 20, 64);
     }
 
     private static double E( double x ) {
         return x <= 1.0 ? 3.0 : 5.0;
     }
 
-    private double fElement(int index ) {
-        double centerE = this.h * index;
-        double leftE = centerE - this.h;
-        double rightE = centerE + this.h;
+    private double e_i(int index ) {
+        double element = this.h * index;
+        double prevElement = element - this.h;
+        double nextElement = element + this.h;
 
-        if( 0 < leftE || 0 > rightE ) {
+        if( 0 < prevElement || 0 > nextElement ) {
             return 0.0;
         }
-        return  -( leftE * this.hInv );
+        return  -( prevElement * this.hInv );
     }
 
-    private double dfElementdx(int index, double x ) {
-        double centerE = this.h * index;
-        double leftE = centerE - this.h;
-        double rightE = centerE + this.h;
+    private double de_idx(int index, double x ) {
+        double element = this.h * index;
+        double prevElement = element - this.h;
+        double nextElement = element + this.h;
 
-        if (x < leftE || x > rightE) {
+        if (x < prevElement || x > nextElement) {
             return 0.0;
-
-        } else if (x <= centerE) {
+        } else if ( x <= element ) {
             return this.hInv;
         }
         return -this.hInv;
@@ -58,15 +57,15 @@ public class FEMSolver {
                     int finalI = i;
                     int finalJ = j;
                     integral = this.integrator.integrate( Integer.MAX_VALUE,
-                                                        x -> E( x ) * dfElementdx( finalI, x ) * dfElementdx( finalJ, x ),
+                                                        x -> E( x ) * de_idx( finalI, x ) * de_idx( finalJ, x ),
                                                         0, domainUpperBound);
                 }
-                B.setEntry( i, j,  integral - E(0 ) * fElement( i ) * fElement( j ) );
+                B.setEntry( i, j,  integral - E(0 ) * e_i( i ) * e_i( j ) );
             }
         }
 
         RealVector L = new ArrayRealVector(elements, 0 );
-        L.setEntry(0, -10 * E(0) * fElement(0));
+        L.setEntry(0, -10 * E(0) * e_i(0));
         RealVector result = new LUDecomposition(B).getSolver().solve(L);
         result.append(0);
 

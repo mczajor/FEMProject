@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.util.Objects;
@@ -18,6 +19,12 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("MainScene.css")).toExternalForm());
+        scene.setOnKeyPressed(event -> {
+            MainSceneController controller = loader.getController();
+            if (Objects.requireNonNull(event.getCode()) == KeyCode.ENTER) {
+                controller.btnClick();
+            }
+        });
 
 
         primaryStage.setTitle("Finite Elements Method");
